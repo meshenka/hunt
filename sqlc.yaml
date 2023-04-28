@@ -1,0 +1,13 @@
+sql:
+  - engine: "postgresql"
+    gen:
+      go:
+        emit_result_struct_pointers: false
+        out: "generated"
+        output_db_file_name: "db.go"
+        output_files_suffix: ""
+        output_models_file_name: "model.go"
+        package: "generated"
+    queries: "storage/queries.sql"
+    schema: "storage/migrations/"
+version: 2
