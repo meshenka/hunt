@@ -32,7 +32,7 @@ func run(parent context.Context) error {
 
 	return http.Listen(
 		ctx,
-		http.WithDatabaseDSN(cmd.Env("HUNT_DATABASE_DSN", "postgres://root:root@db:5432/hunt")),
+		http.WithDatabaseDSN(cmd.Env("HUNT_DATABASE_DSN", "postgres://root:root@localhost:5432/hunt")),
         http.WithHost(cmd.Env("HUNT_HOST", ":4000")),
 	)
 }
