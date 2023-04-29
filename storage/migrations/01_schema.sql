@@ -47,6 +47,7 @@ CREATE TABLE opportunity (
     created_at timestamptz DEFAULT now() NOT NULL,
     updated_at timestamptz DEFAULT now() NOT NULL,
     author_id uuid NOT NULL,
+    company_id uuid NOT NULL,
     category text DEFAULT '' NOT NULL, -- backend, frontend, fullstack
     link text DEFAULT '' NOT NULL,
     salary_low int DEFAULT 22000 NOT NULL,
@@ -57,7 +58,8 @@ CREATE TABLE opportunity (
     kind text DEFAULT 'cdi' NOT NULL, -- cdi cdd part time
     work_format text DEFAULT '' NOT NULL, -- remote, hybrid, on site 
     contact text DEFAULT '' NOT NULL, -- who do i talk to
-    CONSTRAINT fk_opportunity_author FOREIGN KEY (author_id) REFERENCES account(id)
+    CONSTRAINT fk_opportunity_author FOREIGN KEY (author_id) REFERENCES account(id),
+    CONSTRAINT fk_opportunity_company FOREIGN KEY (company_id) REFERENCES company(id)
 );
 CREATE INDEX opportunity_title ON opportunity (title);
 CREATE INDEX opportunity_category ON opportunity (category);

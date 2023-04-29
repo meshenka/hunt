@@ -1,4 +1,12 @@
 --
+-- Account
+--
+
+-- name: AccountByID :one
+SELECT * FROM account
+WHERE id = $1;
+
+--
 -- Company
 --
 

@@ -8,16 +8,22 @@ unit: ## run unit tests
 integration: ## run integration tests
 	go test -race --tags=integrations ./...
 
-lint: generate ## lint code
-	golangci-lint run --build-tags=integration
+lint: generate **/*.go ## lint code
+	golangci-lint -v run --build-tags=integration
 
 test: lint unit integration ## run all tests
 
 ##
+## RUN
+## ---
+##
+run: lint generate
+	go run cmd/api/main.go
+##
 ## BUILD
 ## -----
 ##
-generate: sqlc ## cenerate models from the SQL schema
+generate: storage/migrations/*.sql storage/queries.sql ## cenerate models from the SQL schema
 	sqlc generate
 #    PGPASSWORD=root psql -h localhost -d hunt -U root -w -f models/schema.sql
 
@@ -40,7 +46,7 @@ build: test ## build binary
 tern: ## Install tool to run migrations
 	go install github.com/jackc/tern@latest
 
-migrate: tern ## Run database migrations
+migrate: storage/migrations/*.sql # Run database migrations
 	tern migrate --config tern.conf --migrations storage/migrations
 
 resetdb: ## complete reset local db 
