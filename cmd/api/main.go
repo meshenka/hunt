@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -19,7 +20,6 @@ func main() {
 	os.Exit(0)
 }
 
-
 func run(parent context.Context) error {
 	ctx, cancel := signal.NotifyContext(
 		parent,
@@ -33,6 +33,6 @@ func run(parent context.Context) error {
 	return http.Listen(
 		ctx,
 		http.WithDatabaseDSN(cmd.Env("HUNT_DATABASE_DSN", "postgres://root:root@localhost:5432/hunt")),
-        http.WithHost(cmd.Env("HUNT_HOST", ":4000")),
+		http.WithHost(fmt.Sprintf("0.0.0.0:%s", cmd.Env("HUNT_PORT", "4000"))),
 	)
 }
