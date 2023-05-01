@@ -46,8 +46,8 @@ func Listen(ctx context.Context, opts ...Option) error {
 
 	// TODO add middleware for authenticate.
 
-	opportunities := api.Group("/opportunites")
-	opportunities.GET("/", Heartbeat())    // list/search your opportunities.
+	opportunities := api.Group("/opportunities")
+	opportunities.GET("", Heartbeat())    // list/search your opportunities.
 	opportunities.GET("/:id", Heartbeat()) // show single opportinity.
 
 	internal := router.Group("/__internal__")
