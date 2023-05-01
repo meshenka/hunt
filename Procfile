@@ -1,0 +1,1 @@
+postdeploy: make tern migrate
