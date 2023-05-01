@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	// "github.com/meshenka/hunt/storage"
@@ -30,7 +31,6 @@ func Listen(ctx context.Context, opts ...Option) error {
 		}
 	}
 
-	log.Debug().Str("dsn", cfg.databaseDSN).Msg("database string")
 	if cfg.databaseDSN == "" {
 		return fmt.Errorf("database DSN not configured")
 	}
@@ -43,8 +43,49 @@ func Listen(ctx context.Context, opts ...Option) error {
 
 	router := gin.New()
 	api := router.Group("/api/v1")
-	api.GET("/__internal__/ping", Heartbeat())
-    // TODO add proper routing.
-	return http.ListenAndServe(cfg.host, router)
+
+	// TODO add middleware for authenticate.
+
+	opportunities := api.Group("/opportunites")
+	opportunities.GET("/", Heartbeat())    // list/search your opportunities.
+	opportunities.GET("/:id", Heartbeat()) // show single opportinity.
+
+	internal := router.Group("/__internal__")
+	internal.GET("/ping", Heartbeat())
+	internal.GET("/metrics", Heartbeat()) // TODO plug in prometheus.
+
+	admin := router.Group("/admin")
+	admin.GET("/login", Heartbeat()) // TODO setup real handlers
+
+	return serve(ctx, cfg.host, router)
+}
+
+// Serve routes HTTP requests to handler.
+func serve(ctx context.Context, addr string, handler http.Handler) error {
+	log.Debug().Str("address", addr).Msg("starting HTTP server")
+
+	srv := new(http.Server)
+	srv.Addr = addr
+	srv.Handler = handler
+
+	sink := make(chan error, 1)
+
+	go func() {
+		defer close(sink)
+		sink <- srv.ListenAndServe()
+	}()
+
+	select {
+	case <-ctx.Done():
+		return shutdown(srv)
+	case err := <-sink:
+		return err
+	}
+}
+
+func shutdown(srv *http.Server) error {
+	ctx, cancel := context.WithTimeout(context.Background(),  time.Second * 10)
+	defer cancel()
+	return srv.Shutdown(ctx)
 }
 
