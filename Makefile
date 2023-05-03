@@ -44,7 +44,7 @@ build: test ## build binary
 ##
 
 tern: ## Install tool to run migrations
-	go install github.com/jackc/tern@latest
+	go install github.com/jackc/tern/v2@latest
 
 migrate: storage/migrations/*.sql # Run database migrations
 	tern migrate --config tern.conf --migrations storage/migrations
