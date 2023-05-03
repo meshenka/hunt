@@ -1,0 +1,3 @@
+#!/bin/bash
+set -e
+go install github.com/jackc/tern/v2@latest
